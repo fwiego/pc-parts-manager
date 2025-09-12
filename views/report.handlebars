@@ -1,0 +1,64 @@
+<form action="/report" method="POST" class="col s12">
+  <div class="input-field col s12">
+    <select id="category-select" required>
+      <option value="" disabled selected>Выберите категорию</option>
+      {{#each categories}}
+        <option value="{{@key}}">{{@key}}</option>
+      {{/each}}
+    </select>
+    <label>Категория</label>
+  </div>
+
+  <div class="input-field col s12">
+    <select name="component_id" id="component-select" required>
+      <option value="" disabled selected>Выберите комплектующую</option>
+    </select>
+    <label>Комплектующая</label>
+  </div>
+
+  <div class="input-field col s12">
+    <select name="type" required>
+      <option value="" disabled selected>Выберите тип операции</option>
+      <option value="issue">Поступление</option>
+      <option value="return">Отбытие</option>
+    </select>
+    <label>Тип</label>
+  </div>
+
+  <div class="input-field col s12">
+    <input type="number" name="quantity" min="1" required>
+    <label>Количество</label>
+  </div>
+
+  <div class="col s12">
+    <button class="btn green" type="submit">Сформировать</button>
+    <a href="/" class="btn grey">Назад</a>
+  </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var elems = document.querySelectorAll('select');
+  M.FormSelect.init(elems);
+
+  const categorySelect = document.getElementById('category-select');
+  const componentSelect = document.getElementById('component-select');
+
+  const categories = {{{json categories}}};
+
+  categorySelect.addEventListener('change', () => {
+    const selectedCategory = categorySelect.value;
+    componentSelect.innerHTML = '<option value="" disabled selected>Выберите комплектующую</option>';
+
+    if (categories[selectedCategory]) {
+      categories[selectedCategory].forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.component_id;
+        option.textContent = c.name + ' - ' + c.manufacturer;
+        componentSelect.appendChild(option);
+      });
+    }
+    M.FormSelect.init(componentSelect);
+  });
+});
+</script>

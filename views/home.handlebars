@@ -6,6 +6,20 @@
 </head>
 <body>
   <h1>{{title}} 🚀</h1>
-  <p>Сервер работает!</p>
+
+<p>Привет, {{full_name}}!</p>
+
+{{#if (eq user.role_id 0)}}
+  <a href="/users" class="btn blue">Управление пользователями</a>
+{{/if}}
+
+{{!-- Кнопки для менеджера --}}
+{{#if (eq user.role_id 1)}}
+  <a href="/report" class="btn green">Сформировать отчет</a>
+  <a href="/reportcomplete" class="btn orange">Сформированные отчеты</a>
+{{/if}}
+
+<a href="/logout" class="btn grey">Выйти</a>
+
 </body>
 </html>

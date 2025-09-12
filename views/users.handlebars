@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body class="container">
+
+  <h3 class="center-align">{{title}}</h3>
+
+  <table class="highlight">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ФИО</th>
+        <th>Логин</th>
+        <th>Роль</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>{{this.user_id}}</td>
+        <td>{{this.full_name}}</td>
+        <td>{{this.login}}</td>
+        <td>
+          {{#if (eq this.role_id 0)}}Admin{{/if}}
+          {{#if (eq this.role_id 1)}}Manager{{/if}}
+          {{#if (eq this.role_id 2)}}User{{/if}}
+        </td>
+        <td>
+          <form action="/users/{{this.user_id}}/role" method="POST">
+            <div class="input-field">
+              <select name="role_id">
+                <option value="" disabled selected>Выбрать роль</option>
+                <option value="1">Manager</option>
+                <option value="2">User</option>
+              </select>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Сохранить</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <a href="/" class="btn grey">Назад</a>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('select');
+      M.FormSelect.init(elems);
+    });
+  </script>
+
+</body>
+</html>

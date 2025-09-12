@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body class="container">
+
+<h3 class="center-align">{{title}}</h3>
+
+<table class="highlight">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Комплектующая</th>
+      <th>Производитель</th>
+      <th>Тип</th>
+      <th>Дата</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each reports}}
+      <tr>
+        <td>{{this.transaction_id}}</td>
+        <td>{{this.name}}</td>
+        <td>{{this.manufacturer}}</td>
+        <td>{{this.type}}</td>
+        <td>{{this.date}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<a href="/" class="btn grey">Назад</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
