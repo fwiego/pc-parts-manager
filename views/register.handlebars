@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <!-- Подключаем Materialize -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body class="container">
+
+  <h3 class="center-align">Регистрация</h3>
+
+  <form action="/register" method="POST" class="col s12">
+
+    <div class="input-field">
+      <input id="full_name" type="text" name="full_name" required>
+      <label for="full_name">ФИО</label>
+    </div>
+
+    <div class="input-field">
+      <input id="login" type="text" name="login" required>
+      <label for="login">Логин</label>
+    </div>
+
+    <div class="input-field">
+      <input id="password" type="password" name="password" required>
+      <label for="password">Пароль</label>
+    </div>
+
+    <div class="center-align">
+      <button type="submit" class="btn waves-effect waves-light">Зарегистрироваться</button>
+    </div>
+  </form>
+
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
