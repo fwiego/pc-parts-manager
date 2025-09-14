@@ -2,6 +2,15 @@ const express = require('express');
 const pool = require('../db');
 const router = express.Router();
 
+const categoryNames = {
+  RAM: "Оперативная память",
+  CPU: "Процессоры",
+  GPU: "Видеокарты",
+  HDD: "Жёсткие диски",
+  SSD: "SSD-накопители"
+};
+
+
 // Страница создания отчета (форма)
 router.get('/report', async (req, res) => {
   if (!req.session.user || req.session.user.role_id !== 1) return res.send('Доступ запрещён');
@@ -15,7 +24,7 @@ router.get('/report', async (req, res) => {
     categories[c.category].push(c);
   });
 
-  res.render('report', { title: 'Сформировать отчет', categories, user: req.session.user });
+  res.render('report', { title: 'Сформировать отчет', categories, categoryNames, user: req.session.user });
 });
 
 // Обработка формы отчета
@@ -27,8 +36,9 @@ router.post('/report', async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO transactions (component_id, user_id, type, date, order_id) VALUES (?, ?, ?, NOW(), NULL)',
-      [component_id, userId, type]
+      `INSERT INTO transactions (user_id, component_id, type, quantity, date) 
+   VALUES (?, ?, ?, ?, NOW())`,
+  [userId, component_id, type, quantity]
     );
     res.redirect('/reportcomplete');
   } catch (err) {
@@ -53,5 +63,34 @@ router.get('/reportcomplete', async (req, res) => {
 
   res.render('reportcomplete', { title: 'Сформированные отчеты', reports: rows, user: req.session.user });
 });
+
+// Просмотр всех отчётов менеджеров (только для admin)
+router.get('/manager-reports', async (req, res) => {
+  if (!req.session.user || Number(req.session.user.role_id) !== 0) {
+    return res.redirect('/login'); // доступ только для админа
+  }
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT t.transaction_id, c.name AS component, c.manufacturer, 
+              t.type, t.date, u.full_name AS manager
+       FROM transactions t
+       JOIN components c ON t.component_id = c.component_id
+       JOIN users u ON t.user_id = u.user_id
+       WHERE u.role_id = 1
+       ORDER BY t.date DESC`
+    );
+
+    res.render('manager-reports', {
+      title: 'Отчёты менеджеров',
+      reports: rows,
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error(err);
+    res.send('Ошибка при загрузке отчётов менеджеров!');
+  }
+});
+
 
 module.exports = router;

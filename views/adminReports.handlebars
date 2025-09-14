@@ -1,0 +1,30 @@
+<h4>Отчёты менеджеров</h4>
+
+<table class="striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Менеджер</th>
+      <th>Тип операции</th>
+      <th>Комплектующая</th>
+      <th>Производитель</th>
+      <th>Количество</th>
+      <th>Дата</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each reports}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{manager}}</td>
+        <td>{{type}}</td>
+        <td>{{component_name}}</td>
+        <td>{{manufacturer}}</td>
+        <td>{{quantity}}</td>
+        <td>{{date}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<a href="/" class="btn grey">Назад</a>

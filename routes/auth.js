@@ -26,10 +26,10 @@ router.get('/login', (req, res) => res.render('login', { title: 'Авториз�
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
   const [rows] = await pool.query('SELECT * FROM users WHERE login = ?', [login]);
-  if (rows.length === 0) return res.status(401).send('Неверный логин');
+  if (rows.length === 0) return res.status(401).send('Неверный логин или пароль');
 
   const user = rows[0];
-  if (!(await bcrypt.compare(password, user.password_hash))) return res.status(401).send('Неверный пароль');
+  if (!(await bcrypt.compare(password, user.password_hash))) return res.status(401).send('Неверный логин или пароль');
 
   req.session.user = { id: user.user_id, name: user.full_name, role_id: user.role_id };
   res.redirect('/');

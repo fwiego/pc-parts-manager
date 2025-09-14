@@ -3,7 +3,7 @@
     <select id="category-select" required>
       <option value="" disabled selected>Выберите категорию</option>
       {{#each categories}}
-        <option value="{{@key}}">{{@key}}</option>
+        <option value="{{@key}}">{{lookup ../categoryNames @key}}</option>
       {{/each}}
     </select>
     <label>Категория</label>
@@ -22,12 +22,12 @@
       <option value="issue">Поступление</option>
       <option value="return">Отбытие</option>
     </select>
-    <label>Тип</label>
+    <label>Тип операции</label>
   </div>
 
   <div class="input-field col s12">
     <input type="number" name="quantity" min="1" required>
-    <label>Количество</label>
+    <label for="quantity">Количество</label>
   </div>
 
   <div class="col s12">
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
       categories[selectedCategory].forEach(c => {
         const option = document.createElement('option');
         option.value = c.component_id;
-        option.textContent = c.name + ' - ' + c.manufacturer;
+        option.textContent = `${c.name} - ${c.manufacturer}`;
         componentSelect.appendChild(option);
       });
     }
@@ -62,3 +62,4 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
