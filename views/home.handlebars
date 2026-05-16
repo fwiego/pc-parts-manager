@@ -1,26 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{title}}</title>
-</head>
-<body>
-  <h1>{{title}} 🚀</h1>
+<div class="page-header">
+  <h1>Добро пожаловать, {{user.name}} 👋</h1>
+  <p>
+    {{#if (eq user.role_id 0)}}Администратор системы{{/if}}
+    {{#if (eq user.role_id 1)}}Менеджер склада{{/if}}
+    {{#if (eq user.role_id 2)}}Пользователь{{/if}}
+  </p>
+</div>
 
-<p>Привет, {{user.full_name}}!</p>
+<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;">
 
-{{#if (eq user.role_id 0)}}
-  <a href="/users" class="btn blue">Управление пользователями</a>
-  <a href="/admin/adminReports" class="btn blue">Отчёты менеджеров</a>
-{{/if}}
+  {{!-- АДМИН --}}
+  {{#if (eq user.role_id 0)}}
+    <a href="/users" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#4f8ef7'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">👥</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Пользователи</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Управление аккаунтами и ролями</div>
+      </div>
+    </a>
+    <a href="/admin/adminReports" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#4f8ef7'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">📊</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Отчёты менеджеров</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Все транзакции по складу</div>
+      </div>
+    </a>
+  {{/if}}
 
-{{!-- Кнопки для менеджера --}}
-{{#if (eq user.role_id 1)}}
-  <a href="/report" class="btn green">Сформировать отчет</a>
-  <a href="/reportcomplete" class="btn orange">Сформированные отчеты</a>
-{{/if}}
+  {{!-- МЕНЕДЖЕР --}}
+  {{#if (eq user.role_id 1)}}
+    <a href="/report" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#3ecf8e'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">➕</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Создать транзакцию</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Поступление или списание со склада</div>
+      </div>
+    </a>
+    <a href="/reportcomplete" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#3ecf8e'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">📋</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Мои отчёты</div>
+        <div style="color:var(--muted); font-size:0.88rem;">История операций на складе</div>
+      </div>
+    </a>
+    <a href="/orders" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#3ecf8e'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">📥</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Заказы пользователей</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Обработка входящих заявок</div>
+      </div>
+    </a>
+  {{/if}}
 
-<a href="/logout" class="btn grey">Выйти</a>
+  {{!-- ЮЗЕР --}}
+  {{#if (eq user.role_id 2)}}
+    <a href="/orders/create" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#4f8ef7'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">🛒</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Создать заказ</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Заявка на получение комплектующих</div>
+      </div>
+    </a>
+    <a href="/orders/my" style="text-decoration:none;">
+      <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#4f8ef7'" onmouseout="this.style.borderColor=''">
+        <div style="font-size:1.6rem; margin-bottom:0.75rem;">📦</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Мои заказы</div>
+        <div style="color:var(--muted); font-size:0.88rem;">История и статусы заявок</div>
+      </div>
+    </a>
+  {{/if}}
 
-</body>
-</html>
+</div>

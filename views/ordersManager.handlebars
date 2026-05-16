@@ -1,0 +1,74 @@
+<div class="page-header">
+  <h1>Заказы пользователей</h1>
+  <p>Просмотр и обработка входящих заявок</p>
+</div>
+
+<div class="card">
+  {{#if orders.length}}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Пользователь</th>
+          <th>Комплектующая</th>
+          <th>Производитель</th>
+          <th>Количество</th>
+          <th>Статус</th>
+          <th>Дата</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each orders}}
+        <tr>
+          <td class="mono">{{this.order_id}}</td>
+          <td style="font-weight:600;">{{this.client_name}}</td>
+          <td>{{this.component_name}}</td>
+          <td style="color:var(--muted);">{{this.manufacturer}}</td>
+          <td class="mono">{{this.quantity}} шт.</td>
+          <td>
+            {{#if (eq this.status "pending")}}
+              <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">⏳ Ожидает</span>
+            {{/if}}
+            {{#if (eq this.status "approved")}}
+              <span class="badge badge-manager">✅ Одобрен</span>
+            {{/if}}
+            {{#if (eq this.status "rejected")}}
+              <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
+            {{/if}}
+          </td>
+          <td class="mono" style="color:var(--muted);">{{this.order_date}}</td>
+          <td>
+            {{#if (eq this.status "pending")}}
+              <div style="display:flex; gap:0.4rem;">
+                <form action="/orders/{{this.order_id}}/status" method="POST">
+                  <input type="hidden" name="status" value="approved">
+                  <button type="submit" class="btn btn-success" style="padding:0.3rem 0.7rem; font-size:0.8rem;">
+                    Одобрить
+                  </button>
+                </form>
+                <form action="/orders/{{this.order_id}}/status" method="POST">
+                  <input type="hidden" name="status" value="rejected">
+                  <button type="submit" class="btn btn-danger" style="padding:0.3rem 0.7rem; font-size:0.8rem;">
+                    Отклонить
+                  </button>
+                </form>
+              </div>
+            {{else}}
+              <span style="color:var(--muted); font-size:0.82rem;">—</span>
+            {{/if}}
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+    <p style="color:var(--muted); text-align:center; padding:2rem 0;">Заказов пока нет</p>
+  {{/if}}
+
+  <div class="btn-group">
+    <a href="/" class="btn btn-ghost">На главную</a>
+  </div>
+</div>
