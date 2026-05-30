@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.engine('handlebars', engine({
   helpers: {
     json: (context) => JSON.stringify(context),
-    eq: (a, b) => Number(a) === Number(b)
+    eq: (a, b) => a == b
   }
 }));
 app.set('view engine', 'handlebars');

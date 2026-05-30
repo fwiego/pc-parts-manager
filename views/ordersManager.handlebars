@@ -1,98 +1,135 @@
 <div class="page-header">
   <h1>Заказы пользователей</h1>
-  <p>Назначение ячеек, одобрение и выдача заявок</p>
+  <p>Управление статусами, назначение ячеек и создание транзакций</p>
 </div>
 
 {{#if orders.length}}
-  <div style="display:flex; flex-direction:column; gap:1.25rem;">
-  {{#each orders}}
-  <div class="card" style="padding:0;">
+<div style="display:flex; flex-direction:column; gap:1.25rem;">
+{{#each orders}}
+<div class="card" style="padding:0;">
 
-    {{!-- Шапка заказа --}}
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
-      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-        <span class="mono">Заказ #{{this.order_id}}</span>
-        <span style="color:var(--muted); font-size:0.85rem; font-weight:600;">{{this.client_name}}</span>
-        {{#if (eq this.status "pending")}}
-          <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">⏳ Ожидает</span>
-        {{/if}}
-        {{#if (eq this.status "approved")}}
-          <span class="badge badge-manager">✅ Одобрен</span>
-        {{/if}}
-        {{#if (eq this.status "issued")}}
-          <span class="badge badge-admin">📦 Выдан</span>
-        {{/if}}
-        {{#if (eq this.status "rejected")}}
-          <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
-        {{/if}}
-      </div>
-      <span class="mono" style="color:var(--muted); font-size:0.82rem;">{{this.order_date}}</span>
+  {{!-- Шапка --}}
+  <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
+    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+      <span class="mono">Заказ #{{this.order_id}}</span>
+      <span style="font-weight:600; font-size:0.88rem;">{{this.client_name}}</span>
+      {{#if (eq this.status "pending")}}
+        <span class="badge" style="background:rgba(136,146,164,0.15); color:var(--muted);">🕐 Ожидает</span>
+      {{/if}}
+      {{#if (eq this.status "processing")}}
+        <span class="badge" style="background:rgba(79,142,247,0.15); color:var(--accent);">⚙️ В обработке</span>
+      {{/if}}
+      {{#if (eq this.status "ready")}}
+        <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">📦 Готов к выдаче</span>
+      {{/if}}
+      {{#if (eq this.status "issued")}}
+        <span class="badge badge-manager">✅ Выдан</span>
+      {{/if}}
+      {{#if (eq this.status "rejected")}}
+        <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
+      {{/if}}
     </div>
+    <span class="mono" style="color:var(--muted); font-size:0.82rem;">{{this.order_date}}</span>
+  </div>
 
-    {{!-- Позиции --}}
+  {{!-- Позиции --}}
+  <div style="padding:0.5rem 0;">
+    {{#each this.items}}
+    <div style="display:flex; align-items:center; gap:1rem; padding:0.65rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap;">
+      <div style="flex:1; min-width:160px;">
+        <div style="font-weight:600; font-size:0.88rem;">{{this.component_name}}</div>
+        <div style="color:var(--muted); font-size:0.78rem;">{{this.manufacturer}} · {{this.category}}</div>
+      </div>
+      <div class="mono" style="font-size:0.85rem; flex-shrink:0;">{{this.quantity}} шт.</div>
+      {{#if this.cell_number}}
+        <span class="badge badge-admin" style="font-family:var(--mono); flex-shrink:0;">📍 {{this.cell_number}}</span>
+      {{else}}
+        <span style="color:var(--muted); font-size:0.78rem; flex-shrink:0;">ячейка не назначена</span>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+
+  {{!-- Кнопки управления --}}
+  <div style="padding:1rem 1.5rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-start;">
+
+    {{!-- pending → processing --}}
     {{#if (eq this.status "pending")}}
-    {{!-- ФОРМА одобрения с назначением ячеек --}}
-    <form action="/orders/{{this.order_id}}/approve" method="POST">
-      <div style="padding:0.5rem 0;">
-        {{#each this.items}}
-        <div style="display:flex; align-items:center; gap:1rem; padding:0.75rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap;">
-          <div style="flex:1; min-width:200px;">
-            <div style="font-weight:600; font-size:0.9rem;">{{this.component_name}}</div>
-            <div style="color:var(--muted); font-size:0.8rem;">{{this.manufacturer}} · {{this.category}}</div>
-            <div class="mono" style="font-size:0.8rem; margin-top:0.2rem;">{{this.quantity}} шт.</div>
-          </div>
-          <div style="display:flex; align-items:center; gap:0.5rem;">
-            <label style="margin:0; text-transform:none; font-size:0.82rem; color:var(--muted);">Ячейка:</label>
-            <select name="cells[{{this.order_item_id}}]" required style="width:110px; padding:0.3rem 0.5rem; font-size:0.85rem;">
-              <option value="" disabled selected>— выбрать —</option>
-              {{#each ../../../freeCells}}
-                <option value="{{this.cell_id}}">{{this.cell_number}}</option>
-              {{/each}}
-            </select>
-          </div>
-        </div>
-        {{/each}}
-      </div>
-      <div style="padding:1rem 1.5rem; display:flex; gap:0.75rem;">
-        <button type="submit" class="btn btn-success">✅ Одобрить и назначить ячейки</button>
-        <button type="button" class="btn btn-danger"
-                onclick="rejectOrder({{this.order_id}})">❌ Отклонить</button>
-      </div>
-    </form>
-
-    {{else}}
-    {{!-- Просмотр позиций для уже обработанных заказов --}}
-    <div style="padding:0.5rem 0;">
-      {{#each this.items}}
-      <div style="display:flex; align-items:center; gap:1rem; padding:0.65rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap;">
-        <div style="flex:1;">
-          <div style="font-weight:600; font-size:0.9rem;">{{this.component_name}}</div>
-          <div style="color:var(--muted); font-size:0.8rem;">{{this.manufacturer}} · {{this.category}}</div>
-        </div>
-        <div class="mono" style="font-size:0.85rem;">{{this.quantity}} шт.</div>
-        {{#if this.cell_number}}
-          <span class="badge badge-admin" style="font-family:var(--mono);">📍 {{this.cell_number}}</span>
-        {{else}}
-          <span style="color:var(--muted); font-size:0.78rem;">без ячейки</span>
-        {{/if}}
-      </div>
-      {{/each}}
-    </div>
-
-    {{!-- Кнопка "Выдан" только для approved --}}
-    {{#if (eq this.status "approved")}}
-    <div style="padding:1rem 1.5rem;">
-      <form action="/orders/{{this.order_id}}/issue" method="POST" style="display:inline;">
-        <button type="submit" class="btn btn-primary">📦 Отметить как выданный</button>
+      <form action="/orders/{{this.order_id}}/status" method="POST" style="display:inline;">
+        <input type="hidden" name="status" value="processing">
+        <button type="submit" class="btn btn-primary">⚙️ Взять в обработку</button>
       </form>
-    </div>
+      <form action="/orders/{{this.order_id}}/status" method="POST" style="display:inline;">
+        <input type="hidden" name="status" value="rejected">
+        <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Отклонить заказ #{{this.order_id}}?')">❌ Отклонить</button>
+      </form>
     {{/if}}
 
+    {{!-- processing → ready (с назначением ячеек) --}}
+    {{#if (eq this.status "processing")}}
+      <form action="/orders/{{this.order_id}}/status" method="POST" style="width:100%;">
+        <input type="hidden" name="status" value="ready">
+        <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+          {{#each this.items}}
+          <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+            <span style="font-size:0.85rem; font-weight:600; min-width:180px;">{{this.component_name}}</span>
+            <span style="color:var(--muted); font-size:0.8rem;">{{this.quantity}} шт.</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <label style="margin:0; text-transform:none; font-size:0.8rem; color:var(--muted);">Ячейка:</label>
+              <select name="cells[{{this.order_item_id}}]" required style="width:110px; padding:0.3rem 0.5rem; font-size:0.85rem;">
+                <option value="" disabled selected>— выбрать —</option>
+                {{#each ../../freeCells}}
+                  <option value="{{this.cell_id}}">{{this.cell_number}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-success">📦 Готов к выдаче + назначить ячейки</button>
+        </div>
+      </form>
+      <form action="/orders/{{this.order_id}}/status" method="POST" style="display:inline;">
+        <input type="hidden" name="status" value="rejected">
+        <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Отклонить заказ #{{this.order_id}}?')">❌ Отклонить</button>
+      </form>
+    {{/if}}
+
+    {{!-- ready → issued + создать транзакцию --}}
+    {{#if (eq this.status "ready")}}
+      <form action="/orders/{{this.order_id}}/status" method="POST" style="display:inline;">
+        <input type="hidden" name="status" value="issued">
+        <button type="submit" class="btn btn-success"
+                onclick="return confirm('Отметить заказ #{{this.order_id}} как выданный? Ячейки будут освобождены.')">
+          ✅ Выдать заказ
+        </button>
+      </form>
+      <form action="/orders/{{this.order_id}}/transaction" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-primary"
+                onclick="return confirm('Создать транзакцию списания по заказу #{{this.order_id}}?')">
+          📋 Создать транзакцию
+        </button>
+      </form>
+    {{/if}}
+
+    {{!-- issued — только транзакция если ещё не создана --}}
+    {{#if (eq this.status "issued")}}
+      <form action="/orders/{{this.order_id}}/transaction" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-ghost" style="font-size:0.82rem;"
+                onclick="return confirm('Создать транзакцию по заказу #{{this.order_id}}?')">
+          📋 Создать транзакцию повторно
+        </button>
+      </form>
     {{/if}}
 
   </div>
-  {{/each}}
-  </div>
+
+</div>
+{{/each}}
+</div>
 {{else}}
   <div class="card" style="text-align:center; padding:3rem; color:var(--muted);">
     Заказов пока нет
@@ -102,17 +139,3 @@
 <div class="btn-group">
   <a href="/" class="btn btn-ghost">На главную</a>
 </div>
-
-{{!-- Скрытая форма для отклонения --}}
-<form id="reject-form" method="POST" style="display:none;">
-  <input type="hidden" name="_method" value="reject">
-</form>
-
-<script>
-  function rejectOrder(id) {
-    if (!confirm('Отклонить заказ #' + id + '?')) return;
-    const form = document.getElementById('reject-form');
-    form.action = '/orders/' + id + '/reject';
-    form.submit();
-  }
-</script>

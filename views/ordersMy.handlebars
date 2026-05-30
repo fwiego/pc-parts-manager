@@ -4,54 +4,53 @@
 </div>
 
 {{#if orders.length}}
-  <div style="display:flex; flex-direction:column; gap:1rem;">
-  {{#each orders}}
-  <div class="card" style="padding:0;">
+<div style="display:flex; flex-direction:column; gap:1rem;">
+{{#each orders}}
+<div class="card" style="padding:0;">
 
-    {{!-- Шапка заказа --}}
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
-      <div style="display:flex; align-items:center; gap:1rem;">
-        <span class="mono" style="font-size:0.95rem;">Заказ #{{this.order_id}}</span>
-        {{#if (eq this.status "pending")}}
-          <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">⏳ Ожидает</span>
-        {{/if}}
-        {{#if (eq this.status "approved")}}
-          <span class="badge badge-manager">✅ Одобрен</span>
-        {{/if}}
-        {{#if (eq this.status "issued")}}
-          <span class="badge badge-admin">📦 Выдан</span>
-        {{/if}}
-        {{#if (eq this.status "rejected")}}
-          <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
-        {{/if}}
-      </div>
-      <span class="mono" style="color:var(--muted); font-size:0.82rem;">{{this.order_date}}</span>
+  {{!-- Шапка --}}
+  <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
+    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+      <span class="mono">Заказ #{{this.user_order_num}}</span>
+      {{#if (eq this.status "pending")}}
+        <span class="badge" style="background:rgba(136,146,164,0.15); color:var(--muted);">🕐 Ожидает обработки</span>
+      {{/if}}
+      {{#if (eq this.status "processing")}}
+        <span class="badge badge-admin">⚙️ В обработке</span>
+      {{/if}}
+      {{#if (eq this.status "ready")}}
+        <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">📦 Готов к выдаче</span>
+      {{/if}}
+      {{#if (eq this.status "issued")}}
+        <span class="badge badge-manager">✅ Выдан</span>
+      {{/if}}
+      {{#if (eq this.status "rejected")}}
+        <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
+      {{/if}}
     </div>
+    <span class="mono" style="color:var(--muted); font-size:0.82rem;">{{this.order_date}}</span>
+  </div>
 
-    {{!-- Позиции заказа --}}
-    <div style="padding:0.5rem 0;">
-      {{#each this.items}}
-      <div style="display:flex; align-items:center; gap:1rem; padding:0.65rem 1.5rem; border-bottom:1px solid var(--border);">
-        <div style="flex:1;">
-          <div style="font-weight:600; font-size:0.9rem;">{{this.component_name}}</div>
-          <div style="color:var(--muted); font-size:0.8rem;">{{this.manufacturer}} · {{this.category}}</div>
-        </div>
-        <div class="mono" style="font-size:0.85rem;">{{this.quantity}} шт.</div>
-        {{#if this.cell_number}}
-          <div style="display:flex; align-items:center; gap:0.4rem;">
-            <span style="color:var(--muted); font-size:0.78rem;">Ячейка:</span>
-            <span class="badge badge-admin" style="font-family:var(--mono);">{{this.cell_number}}</span>
-          </div>
-        {{else}}
-          <span style="color:var(--muted); font-size:0.78rem;">Ячейка не назначена</span>
-        {{/if}}
+  {{!-- Позиции --}}
+  <div style="padding:0.5rem 0;">
+    {{#each this.items}}
+    <div style="display:flex; align-items:center; gap:1rem; padding:0.6rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap;">
+      <div style="flex:1; min-width:160px;">
+        <div style="font-weight:600; font-size:0.88rem;">{{this.component_name}}</div>
+        <div style="color:var(--muted); font-size:0.78rem;">{{this.manufacturer}} · {{this.category}}</div>
       </div>
-      {{/each}}
+      <div class="mono" style="font-size:0.85rem;">{{this.quantity}} шт.</div>
+      {{!-- Ячейку не показываем, только для статуса ready показываем подсказку --}}
+      {{#if (eq ../status "ready")}}
+        <span style="font-size:0.78rem; color:var(--accent2);">Можно забрать</span>
+      {{/if}}
     </div>
+    {{/each}}
+  </div>
 
-  </div>
-  {{/each}}
-  </div>
+</div>
+{{/each}}
+</div>
 {{else}}
   <div class="card" style="text-align:center; padding:3rem; color:var(--muted);">
     Заказов пока нет
