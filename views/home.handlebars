@@ -54,11 +54,11 @@
 
   {{!-- ЮЗЕР --}}
   {{#if (eq user.role_id 2)}}
-    <a href="/orders/create" style="text-decoration:none;">
+    <a href="/dashboard" style="text-decoration:none;">
       <div class="card" style="cursor:pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='#4f8ef7'" onmouseout="this.style.borderColor=''">
         <div style="font-size:1.6rem; margin-bottom:0.75rem;">🛒</div>
-        <div style="font-weight:700; margin-bottom:0.3rem;">Создать заказ</div>
-        <div style="color:var(--muted); font-size:0.88rem;">Заявка на получение комплектующих</div>
+        <div style="font-weight:700; margin-bottom:0.3rem;">Каталог комплектующих</div>
+        <div style="color:var(--muted); font-size:0.88rem;">Выбор позиций и оформление заказа</div>
       </div>
     </a>
     <a href="/orders/my" style="text-decoration:none;">

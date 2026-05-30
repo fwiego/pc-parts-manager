@@ -1,52 +1,64 @@
 <div class="page-header">
   <h1>Мои заказы</h1>
-  <p>История ваших заявок на комплектующие</p>
+  <p>История заявок и их текущий статус</p>
 </div>
 
-<div class="card">
-  {{#if orders.length}}
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Комплектующая</th>
-          <th>Производитель</th>
-          <th>Количество</th>
-          <th>Статус</th>
-          <th>Дата</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each orders}}
-        <tr>
-          <td class="mono">{{this.order_id}}</td>
-          <td style="font-weight:600;">{{this.component_name}}</td>
-          <td style="color:var(--muted);">{{this.manufacturer}}</td>
-          <td class="mono">{{this.quantity}} шт.</td>
-          <td>
-            {{#if (eq this.status "pending")}}
-              <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">⏳ Ожидает</span>
-            {{/if}}
-            {{#if (eq this.status "approved")}}
-              <span class="badge badge-manager">✅ Одобрен</span>
-            {{/if}}
-            {{#if (eq this.status "rejected")}}
-              <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
-            {{/if}}
-          </td>
-          <td class="mono" style="color:var(--muted);">{{this.order_date}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
-  {{else}}
-    <p style="color:var(--muted); text-align:center; padding:2rem 0;">У вас пока нет заказов</p>
-  {{/if}}
+{{#if orders.length}}
+  <div style="display:flex; flex-direction:column; gap:1rem;">
+  {{#each orders}}
+  <div class="card" style="padding:0;">
 
-  <div class="btn-group">
-    <a href="/orders/create" class="btn btn-primary">+ Новый заказ</a>
-    <a href="/" class="btn btn-ghost">На главную</a>
+    {{!-- Шапка заказа --}}
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <span class="mono" style="font-size:0.95rem;">Заказ #{{this.order_id}}</span>
+        {{#if (eq this.status "pending")}}
+          <span class="badge" style="background:rgba(247,167,79,0.15); color:var(--warn);">⏳ Ожидает</span>
+        {{/if}}
+        {{#if (eq this.status "approved")}}
+          <span class="badge badge-manager">✅ Одобрен</span>
+        {{/if}}
+        {{#if (eq this.status "issued")}}
+          <span class="badge badge-admin">📦 Выдан</span>
+        {{/if}}
+        {{#if (eq this.status "rejected")}}
+          <span class="badge" style="background:rgba(247,92,92,0.15); color:var(--danger);">❌ Отклонён</span>
+        {{/if}}
+      </div>
+      <span class="mono" style="color:var(--muted); font-size:0.82rem;">{{this.order_date}}</span>
+    </div>
+
+    {{!-- Позиции заказа --}}
+    <div style="padding:0.5rem 0;">
+      {{#each this.items}}
+      <div style="display:flex; align-items:center; gap:1rem; padding:0.65rem 1.5rem; border-bottom:1px solid var(--border);">
+        <div style="flex:1;">
+          <div style="font-weight:600; font-size:0.9rem;">{{this.component_name}}</div>
+          <div style="color:var(--muted); font-size:0.8rem;">{{this.manufacturer}} · {{this.category}}</div>
+        </div>
+        <div class="mono" style="font-size:0.85rem;">{{this.quantity}} шт.</div>
+        {{#if this.cell_number}}
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span style="color:var(--muted); font-size:0.78rem;">Ячейка:</span>
+            <span class="badge badge-admin" style="font-family:var(--mono);">{{this.cell_number}}</span>
+          </div>
+        {{else}}
+          <span style="color:var(--muted); font-size:0.78rem;">Ячейка не назначена</span>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+
   </div>
+  {{/each}}
+  </div>
+{{else}}
+  <div class="card" style="text-align:center; padding:3rem; color:var(--muted);">
+    Заказов пока нет
+  </div>
+{{/if}}
+
+<div class="btn-group">
+  <a href="/dashboard" class="btn btn-primary">+ Новый заказ</a>
+  <a href="/" class="btn btn-ghost">На главную</a>
 </div>

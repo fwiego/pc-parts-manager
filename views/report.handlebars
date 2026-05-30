@@ -1,65 +1,99 @@
-<form action="/report" method="POST" class="col s12">
-  <div class="input-field col s12">
-    <select id="category-select" required>
-      <option value="" disabled selected>Выберите категорию</option>
-      {{#each categories}}
-        <option value="{{@key}}">{{lookup ../categoryNames @key}}</option>
-      {{/each}}
-    </select>
-    <label>Категория</label>
-  </div>
+<div class="page-header">
+  <h1>Создать транзакцию</h1>
+  <p>Оформите поступление или списание комплектующих со склада</p>
+</div>
 
-  <div class="input-field col s12">
-    <select name="component_id" id="component-select" required>
-      <option value="" disabled selected>Выберите комплектующую</option>
-    </select>
-    <label>Комплектующая</label>
-  </div>
+<div style="max-width:620px;">
+  <div class="card">
+    <form action="/report" method="POST">
 
-  <div class="input-field col s12">
-    <select name="type" required>
-      <option value="" disabled selected>Выберите тип операции</option>
-      <option value="issue">Поступление</option>
-      <option value="return">Отбытие</option>
-    </select>
-    <label>Тип операции</label>
-  </div>
+      <div class="form-group">
+        <label for="category-select">Категория</label>
+        <select id="category-select" required>
+          <option value="" disabled selected>— Выберите категорию —</option>
+          {{#each categories}}
+            <option value="{{@key}}">{{@key}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-  <div class="input-field col s12">
-    <input type="number" name="quantity" min="1" required>
-    <label for="quantity">Количество</label>
-  </div>
+      <div class="form-group">
+        <label for="component_id">Комплектующая</label>
+        <select name="component_id" id="component_id" required disabled>
+          <option value="" disabled selected>— Сначала выберите категорию —</option>
+        </select>
+      </div>
 
-  <div class="col s12">
-    <button class="btn green" type="submit">Сформировать</button>
-    <a href="/" class="btn grey">Назад</a>
+      {{!-- Блок с ячейками появляется после выбора компонента --}}
+      <div id="cell-info" style="display:none; margin-bottom:1.25rem;">
+        <label style="margin-bottom:0.4rem;">Занятые ячейки по этой позиции</label>
+        <div id="cell-list"
+             style="background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:0.65rem 0.9rem; font-family:var(--mono); font-size:0.85rem; min-height:2.5rem;">
+        </div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">
+          Показывает где уже хранится этот компонент по активным заказам
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="type">Тип операции</label>
+        <select name="type" id="type" required>
+          <option value="" disabled selected>— Выберите тип —</option>
+          <option value="issue">📥 Поступление на склад</option>
+          <option value="return">📤 Списание со склада</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="quantity">Количество (шт.)</label>
+        <input type="number" name="quantity" id="quantity" min="1" placeholder="Введите количество" required>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit" class="btn btn-success">Сформировать</button>
+        <a href="/" class="btn btn-ghost">Отмена</a>
+      </div>
+
+    </form>
   </div>
-</form>
+</div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var elems = document.querySelectorAll('select');
-  M.FormSelect.init(elems);
-
-  const categorySelect = document.getElementById('category-select');
-  const componentSelect = document.getElementById('component-select');
-
-  const categories = {{{json categories}}};
+  const categoriesData  = {{{json categories}}};
+  const categorySelect  = document.getElementById('category-select');
+  const componentSelect = document.getElementById('component_id');
+  const cellInfo        = document.getElementById('cell-info');
+  const cellList        = document.getElementById('cell-list');
 
   categorySelect.addEventListener('change', () => {
-    const selectedCategory = categorySelect.value;
-    componentSelect.innerHTML = '<option value="" disabled selected>Выберите комплектующую</option>';
+    const cat = categorySelect.value;
+    componentSelect.innerHTML = '<option value="" disabled selected>— Выберите комплектующую —</option>';
+    componentSelect.disabled = true;
+    cellInfo.style.display = 'none';
 
-    if (categories[selectedCategory]) {
-      categories[selectedCategory].forEach(c => {
-        const option = document.createElement('option');
-        option.value = c.component_id;
-        option.textContent = `${c.name} - ${c.manufacturer}`;
-        componentSelect.appendChild(option);
+    if (categoriesData[cat]) {
+      categoriesData[cat].forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.component_id;
+        opt.textContent = c.name + ' — ' + c.manufacturer;
+        opt.dataset.cells = c.occupied_cells || '';
+        componentSelect.appendChild(opt);
       });
+      componentSelect.disabled = false;
     }
-    M.FormSelect.init(componentSelect);
   });
-});
-</script>
 
+  componentSelect.addEventListener('change', () => {
+    const selected = componentSelect.options[componentSelect.selectedIndex];
+    const cells = selected.dataset.cells;
+
+    if (cells) {
+      cellList.textContent = cells;
+      cellList.style.color = 'var(--warn)';
+    } else {
+      cellList.textContent = 'Нет занятых ячеек';
+      cellList.style.color = 'var(--accent2)';
+    }
+    cellInfo.style.display = '';
+  });
+</script>

@@ -1,61 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{title}}</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-</head>
-<body class="container">
+<div class="page-header">
+  <h1>Менеджеры</h1>
+  <p>Создание и удаление аккаунтов менеджеров склада</p>
+</div>
 
-  <h3 class="center-align">{{title}}</h3>
+<div style="display:grid; grid-template-columns: 1fr 340px; gap:1.5rem; align-items:start;">
 
-  <table class="highlight">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>ФИО</th>
-        <th>Логин</th>
-        <th>Роль</th>
-        <th>Действие</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each users}}
-      <tr>
-        <td>{{this.user_id}}</td>
-        <td>{{this.full_name}}</td>
-        <td>{{this.login}}</td>
-        <td>
-          {{#if (eq this.role_id 0)}}Admin{{/if}}
-          {{#if (eq this.role_id 1)}}Manager{{/if}}
-          {{#if (eq this.role_id 2)}}User{{/if}}
-        </td>
-        <td>
-          <form action="/users/{{this.user_id}}/role" method="POST">
-            <div class="input-field">
-              <select name="role_id">
-                <option value="" disabled selected>Выбрать роль</option>
-                <option value="1">Manager</option>
-                <option value="2">User</option>
-              </select>
-            </div>
-            <button class="btn waves-effect waves-light" type="submit">Сохранить</button>
-          </form>
-        </td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
+  {{!-- Таблица менеджеров --}}
+  <div class="card">
+    {{#if managers.length}}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ФИО</th>
+            <th>Логин</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each managers}}
+          <tr>
+            <td class="mono">{{this.user_id}}</td>
+            <td style="font-weight:600;">{{this.full_name}}</td>
+            <td class="mono">{{this.login}}</td>
+            <td style="text-align:right;">
+              <form action="/users/{{this.user_id}}/delete" method="POST"
+                    onsubmit="return confirm('Удалить менеджера «{{this.full_name}}»?')">
+                <button type="submit" class="btn btn-danger"
+                        style="padding:0.3rem 0.75rem; font-size:0.8rem;">
+                  Удалить
+                </button>
+              </form>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+      <p style="color:var(--muted); text-align:center; padding:2rem 0;">
+        Менеджеров пока нет — создайте первого →
+      </p>
+    {{/if}}
 
-  <a href="/" class="btn grey">Назад</a>
+    <div class="btn-group">
+      <a href="/" class="btn btn-ghost">На главную</a>
+    </div>
+  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('select');
-      M.FormSelect.init(elems);
-    });
-  </script>
+  {{!-- Форма создания --}}
+  <div class="card" style="position:sticky; top:72px;">
+    <div style="font-size:1rem; font-weight:700; margin-bottom:1.25rem;">
+      Новый менеджер
+    </div>
+    <form action="/users/create" method="POST">
+      <div class="form-group">
+        <label for="full_name">ФИО</label>
+        <input type="text" name="full_name" id="full_name"
+               placeholder="Иванов Иван Иванович" required>
+      </div>
+      <div class="form-group">
+        <label for="login">Логин</label>
+        <input type="text" name="login" id="login"
+               placeholder="manager_ivanov" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input type="password" name="password" id="password"
+               placeholder="Минимум 6 символов" required minlength="6">
+      </div>
+      <button type="submit" class="btn btn-success" style="width:100%; justify-content:center;">
+        Создать менеджера
+      </button>
+    </form>
+  </div>
 
-</body>
-</html>
+</div>
